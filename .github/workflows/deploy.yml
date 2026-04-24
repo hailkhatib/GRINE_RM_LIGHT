@@ -17,11 +17,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node (Simple)
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
+      # On retire complètement setup-node pour éviter tout conflit
       - name: Install Dependencies
         run: npm install --no-package-lock
 
