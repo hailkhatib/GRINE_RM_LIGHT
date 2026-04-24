@@ -27,12 +27,12 @@ jobs:
         run: npm install
 
       - name: Export Web Bundle
-        run: npx exo export -p web
+        run: npx expo export -p web
         env:
           APP_VARIANT: ${{ matrix.variant }}
 
       - name: Deploy to Netlify
-        uses: ntl/action-netlify@v1.2.4
+        uses: nwtgck/actions-netlify@v3.0
         with:
           publish-dir: ./dist
           production-deploy: true
