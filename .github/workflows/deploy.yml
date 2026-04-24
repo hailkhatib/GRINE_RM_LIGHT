@@ -1,0 +1,47 @@
+name: Multi-Variant Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        variant: [light, advanced, premium]
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Export Web Bundle
+        run: npx exo export -p web
+        env:
+          APP_VARIANT: ${{ matrix.variant }}
+
+      - name: Deploy to Netlify
+        uses: ntl/action-netlify@v1.2.4
+        with:
+          publish-dir: ./dist
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          netlify-config-path: ./netlify.toml
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ 
+            matrix.variant == 'light' && secrets.NETLIFY_SITE_ID_LIGHT || 
+            matrix.variant == 'advanced' && secrets.NETLIFY_SITE_ID_ADVANCED || 
+            secrets.NETLIFY_SITE_ID_PREMIUM 
+            }}
