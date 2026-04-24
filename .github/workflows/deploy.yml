@@ -19,7 +19,7 @@ jobs:
 
       # On retire complètement setup-node pour éviter tout conflit
       - name: Install Dependencies
-        run: npm install --no-package-lock
+        run: npm install --legacy-peer-deps
 
       - name: Export Web Bundle
         run: npm run export:${{ matrix.variant }}
