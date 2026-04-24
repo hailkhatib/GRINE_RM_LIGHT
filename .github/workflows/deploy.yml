@@ -27,9 +27,7 @@ jobs:
         run: npm install
 
       - name: Export Web Bundle
-        run: npx expo export -p web
-        env:
-          APP_VARIANT: ${{ matrix.variant }}
+        run: npm run export:${{ matrix.variant }}
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
