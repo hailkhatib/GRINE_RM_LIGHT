@@ -49,7 +49,21 @@ export const translations = {
     vDark: 'Dark',
     vClassic: 'Classic',
     vFun: 'Fun',
-    vCoastal: 'Coastal'
+    vCoastal: 'Coastal',
+    maxAptReached: 'Max {max} appartements - Passer à {tier} 🔒',
+    maxEstReached: 'Max {max} établissement(s) - Passer à PREMIUM 🔒',
+    upgradeTitle: 'Version {tier}',
+    upgradeSubtitle: 'Débloquez tout le potentiel de GRINE RM',
+    buyVersion: 'Acheter la version {tier}',
+    notNow: 'Pas maintenant',
+    benefitAdv1: "Jusqu'à 3 appartements",
+    benefitAdv2: "Vue planning 7 jours",
+    benefitAdv3: "3 Langues (FR, EN, ES)",
+    benefitAdv4: "Styles Dark & Classic",
+    benefitPrem1: "Jusqu'à 25 logements (5x5)",
+    benefitPrem2: "Vue planning 15 jours",
+    benefitPrem3: "Tous les Styles (Coastal, Fun...)",
+    benefitPrem4: "Support Prioritaire"
   },
   en: {
     loading: 'Loading...',
@@ -101,7 +115,21 @@ export const translations = {
     vDark: 'Dark',
     vClassic: 'Classic',
     vFun: 'Fun',
-    vCoastal: 'Coastal'
+    vCoastal: 'Coastal',
+    maxAptReached: 'Max {max} units - Upgrade to {tier} 🔒',
+    maxEstReached: 'Max {max} propert(ies) - Upgrade to PREMIUM 🔒',
+    upgradeTitle: '{tier} Version',
+    upgradeSubtitle: 'Unlock the full potential of GRINE RM',
+    buyVersion: 'Buy {tier} version',
+    notNow: 'Not now',
+    benefitAdv1: "Up to 3 units",
+    benefitAdv2: "7-day schedule view",
+    benefitAdv3: "3 Languages (FR, EN, ES)",
+    benefitAdv4: "Dark & Classic Styles",
+    benefitPrem1: "Up to 25 units (5x5)",
+    benefitPrem2: "15-day schedule view",
+    benefitPrem3: "All Styles (Coastal, Fun...)",
+    benefitPrem4: "Priority Support"
   },
   es: {
     loading: 'Cargando...',
@@ -153,7 +181,21 @@ export const translations = {
     vDark: 'Dark',
     vClassic: 'Classic',
     vFun: 'Fun',
-    vCoastal: 'Coastal'
+    vCoastal: 'Coastal',
+    maxAptReached: 'Máx {max} alojamientos - Mejorar a {tier} 🔒',
+    maxEstReached: 'Máx {max} propiedad(es) - Mejorar a PREMIUM 🔒',
+    upgradeTitle: 'Versión {tier}',
+    upgradeSubtitle: 'Desbloquea todo el potencial de GRINE RM',
+    buyVersion: 'Comprar versión {tier}',
+    notNow: 'Ahora no',
+    benefitAdv1: "Hasta 3 alojamientos",
+    benefitAdv2: "Vista de agenda de 7 días",
+    benefitAdv3: "3 Idiomas (FR, EN, ES)",
+    benefitAdv4: "Estilos Dark y Classic",
+    benefitPrem1: "Hasta 25 alojamientos (5x5)",
+    benefitPrem2: "Vista de agenda de 15 días",
+    benefitPrem3: "Todos los estilos (Coastal, Fun...)",
+    benefitPrem4: "Soporte Prioritario"
   }
 };
 

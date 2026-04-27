@@ -216,7 +216,7 @@ const AppSettings = ({ establishments, onUpdate, language, onLangChange, dashboa
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity style={styles.limitReachedBox} onPress={() => onUpgradeRequest(currentTier.id === 'LIGHT' ? 'ADVANCED' : 'PREMIUM')}>
-                   <Text style={styles.limitReachedText}>Max {currentTier.maxApt} appartements - Passer à {currentTier.id === 'LIGHT' ? 'ADVANCED' : 'PREMIUM'} 🔒</Text>
+                   <Text style={styles.limitReachedText}>{t('maxAptReached').replace('{max}', currentTier.maxApt).replace('{tier}', currentTier.id === 'LIGHT' ? 'ADVANCED' : 'PREMIUM')}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -231,7 +231,7 @@ const AppSettings = ({ establishments, onUpdate, language, onLangChange, dashboa
         ) : (
           <TouchableOpacity style={[styles.addEstButton, styles.disabledButton]} onPress={() => onUpgradeRequest('PREMIUM')}>
              <Building size={20} color="#64748b" />
-             <Text style={[styles.addEstButtonText, { color: '#64748b' }]}>Max {currentTier.maxEst} établissement - Passer à PREMIUM 🔒</Text>
+             <Text style={[styles.addEstButtonText, { color: '#64748b' }]}>{t('maxEstReached').replace('{max}', currentTier.maxEst)}</Text>
           </TouchableOpacity>
         )}
 

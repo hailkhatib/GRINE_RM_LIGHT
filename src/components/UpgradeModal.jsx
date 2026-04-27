@@ -17,17 +17,17 @@ const UpgradeModal = ({ visible, onClose, targetTierKey, t }) => {
   const getBenefits = () => {
     if (targetTierKey === 'ADVANCED') {
       return [
-        "Jusqu'à 3 appartements",
-        "Vue planning 7 jours",
-        "3 Langues (FR, EN, ES)",
-        "Styles Dark & Classic"
+        t('benefitAdv1'),
+        t('benefitAdv2'),
+        t('benefitAdv3'),
+        t('benefitAdv4')
       ];
     }
     return [
-      "Jusqu'à 25 logements (5x5)",
-      "Vue planning 15 jours",
-      "Tous les Styles (Coastal, Fun...)",
-      "Support Prioritaire"
+      t('benefitPrem1'),
+      t('benefitPrem2'),
+      t('benefitPrem3'),
+      t('benefitPrem4')
     ];
   };
 
@@ -48,8 +48,8 @@ const UpgradeModal = ({ visible, onClose, targetTierKey, t }) => {
             <View style={[styles.iconContainer, { backgroundColor: targetTierKey === 'PREMIUM' ? '#10b981' : '#3b82f6' }]}>
                {targetTierKey === 'PREMIUM' ? <Zap size={32} color="#fff" /> : <ShieldCheck size={32} color="#fff" />}
             </View>
-            <Text style={styles.title}>Version {tier.name}</Text>
-            <Text style={styles.subtitle}>Débloquez tout le potentiel de GRINE RM</Text>
+            <Text style={styles.title}>{t('upgradeTitle').replace('{tier}', tier.name)}</Text>
+            <Text style={styles.subtitle}>{t('upgradeSubtitle')}</Text>
           </View>
 
           <View style={styles.benefitsList}>
@@ -63,11 +63,11 @@ const UpgradeModal = ({ visible, onClose, targetTierKey, t }) => {
 
           <TouchableOpacity style={[styles.buyButton, { backgroundColor: targetTierKey === 'PREMIUM' ? '#059669' : '#2563eb' }]} onPress={handleBuy}>
             <ShoppingCart size={20} color="#fff" />
-            <Text style={styles.buyButtonText}>Acheter la version {tier.name}</Text>
+            <Text style={styles.buyButtonText}>{t('buyVersion').replace('{tier}', tier.name)}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-            <Text style={styles.cancelButtonText}>Pas maintenant</Text>
+            <Text style={styles.cancelButtonText}>{t('notNow')}</Text>
           </TouchableOpacity>
         </View>
       </View>
