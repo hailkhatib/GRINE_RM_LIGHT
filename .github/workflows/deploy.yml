@@ -24,6 +24,9 @@ jobs:
       - name: Export Web Bundle
         run: npm run export:${{ matrix.variant }}
 
+      - name: Debug - List Files
+        run: ls -R ./dist
+
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
         with:
@@ -31,6 +34,7 @@ jobs:
           production-deploy: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           production-branch: main
+          enable-commit-comment: false
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ 
