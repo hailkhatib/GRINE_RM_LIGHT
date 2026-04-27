@@ -7,7 +7,7 @@ export const TIERS = {
     name: 'LIGHT',
     maxEst: 1,
     maxApt: 1,
-    languages: ['fr'],
+    languages: ['fr', 'en', 'es'],
     styles: ['dark'],
     allowedDays: [3],
     buyLink: 'https://apps.apple.com/app/grine-rm-light'
