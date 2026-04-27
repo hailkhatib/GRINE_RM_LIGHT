@@ -17,17 +17,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # On retire complètement setup-node pour éviter tout conflit
       - name: Install Dependencies
         run: npm install --legacy-peer-deps --force
 
       - name: Export Web Bundle
         run: npm run export:${{ matrix.variant }}
 
-      - name: Debug - List Files
-        run: ls -R ./dist
-
-      - name: Deploy to Netlify
+      - name: Deploy Light to Netlify
+        if: matrix.variant == 'light'
         uses: nwtgck/actions-netlify@v3.0
         with:
           publish-dir: ./dist
@@ -37,4 +34,30 @@ jobs:
           enable-commit-comment: false
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ matrix.variant == 'light' && secrets.NETLIFY_SITE_ID_LIGHT || (matrix.variant == 'advanced' && secrets.NETLIFY_SITE_ID_ADVANCED || secrets.NETLIFY_SITE_ID_PREMIUM) }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_LIGHT }}
+
+      - name: Deploy Advanced to Netlify
+        if: matrix.variant == 'advanced'
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: ./dist
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          production-branch: main
+          enable-commit-comment: false
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_ADVANCED }}
+
+      - name: Deploy Premium to Netlify
+        if: matrix.variant == 'premium'
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: ./dist
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          production-branch: main
+          enable-commit-comment: false
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_PREMIUM }}
