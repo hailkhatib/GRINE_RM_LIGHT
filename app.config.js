@@ -7,7 +7,8 @@ const CONFIGS = {
     bundleId: "com.grine.rm.light",
     icon: "./assets/icon-advanced.png",
     splash: "./assets/splash-advanced.png",
-    tier: "LIGHT"
+    tier: "LIGHT",
+    easProjectId: "49dad1f2-d586-4950-ae9d-86a43261849c"
   },
   advanced: {
     name: "GRINE RM Advanced",
@@ -15,7 +16,8 @@ const CONFIGS = {
     bundleId: "com.grine.rm.advanced",
     icon: "./assets/icon-light.png",
     splash: "./assets/splash-light.png",
-    tier: "ADVANCED"
+    tier: "ADVANCED",
+    easProjectId: "470a5c00-19de-4e48-a98d-9e610f5db00a"
   },
   premium: {
     name: "GRINE RM Premium",
@@ -23,7 +25,8 @@ const CONFIGS = {
     bundleId: "com.grine.rm.premium",
     icon: "./assets/icon-premium.png",
     splash: "./assets/splash-premium.png",
-    tier: "PREMIUM"
+    tier: "PREMIUM",
+    easProjectId: "cf23ddbe-c6ee-42a0-9947-9fdef02222ed"
   }
 };
 
@@ -60,12 +63,20 @@ export default {
     },
     extra: {
       tier: activeConfig.tier,
-      eas: {
-        projectId: "8985ce70-f472-466c-94cc-408c9038e23f"
-      }
+      eas: activeConfig.easProjectId ? { projectId: activeConfig.easProjectId } : undefined
     },
     assetBundlePatterns: [
       "**/*"
+    ],
+    plugins: [
+      [
+        "expo-build-properties",
+        {
+          android: {
+            targetSdkVersion: 35
+          }
+        }
+      ]
     ]
   }
 };

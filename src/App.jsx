@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, SafeAreaView, StyleSheet, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, ScrollView, SafeAreaView, StyleSheet, TouchableOpacity, ActivityIndicator, Image, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { RefreshCw, Settings as SettingsIcon } from 'lucide-react-native';
 import { format } from 'date-fns';
@@ -56,10 +56,28 @@ export default function App() {
       (establishments || []).map(async (est) => {
         const updatedApts = await Promise.all(
           (est.apartments || []).map(async (apt) => {
-            if (!apt?.icalUrl) return apt;
+            const urlsToFetch = apt.icalUrls || (apt.icalUrl ? [apt.icalUrl] : []);
+            const validUrls = urlsToFetch
+              .flatMap(url => url ? url.split(',').map(u => u.trim()) : [])
+              .filter(url => url !== '');
+            
+            if (validUrls.length === 0) return apt;
+            
             try {
-              const events = await fetchCalendarData(apt.icalUrl);
-              return { ...apt, events, lastSync: new Date().toISOString() };
+              const allEventsArrays = [];
+              for (const url of validUrls) {
+                try {
+                  const events = await fetchCalendarData(url);
+                  allEventsArrays.push(events || []);
+                } catch (err) {
+                  console.error(`Error syncing url ${url} for ${apt.name}:`, err);
+                  allEventsArrays.push([]);
+                }
+              }
+              
+              const mergedEvents = allEventsArrays.reduce((acc, val) => acc.concat(val), []);
+              
+              return { ...apt, events: mergedEvents, lastSync: new Date().toISOString() };
             } catch (error) {
               console.error(`Error syncing ${apt.name || 'Unknown'}:`, error);
               return apt;
@@ -107,7 +125,7 @@ export default function App() {
       <View style={styles.header}>
         <View style={styles.brand}>
           <Image source={require('../assets/icon.png')} style={styles.logoImage} />
-          <Text style={styles.title}>
+          <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
             GRINE <Text style={styles.titleAccent}>Management</Text>
           </Text>
           <View style={[styles.tierBadge, { borderColor: currentTier.name === 'PREMIUM' ? '#10b981' : currentTier.name === 'ADVANCED' ? '#3b82f6' : '#64748b' }]}>
@@ -185,6 +203,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0f172a',
+    paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0,
   },
   loadingContainer: {
     flex: 1,
@@ -208,6 +227,7 @@ const styles = StyleSheet.create({
   brand: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   logoImage: {
     width: 32,
@@ -219,6 +239,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '800',
     marginLeft: 10,
+    flexShrink: 1,
   },
   tierBadge: {
     paddingHorizontal: 6,
@@ -227,6 +248,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginLeft: 8,
     marginTop: 2,
+    flexShrink: 0,
   },
   tierBadgeText: {
     fontSize: 9,

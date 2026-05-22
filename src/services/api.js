@@ -121,7 +121,23 @@ export const saveBlockedUids = async (uids) => {
 // --------------------------------------------------
 
 export const fetchCalendarData = async (url) => {
-  // 1. Essai prioritaire avec notre Proxy Netlify
+  // 1. Essai Direct (Parfait pour Mobile Expo Go car pas de restriction CORS)
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'text/calendar, text/plain, */*'
+      }
+    });
+    if (response.ok) {
+      const text = await response.text();
+      return parseCalendar(text);
+    }
+  } catch (e) {
+    console.warn('Direct fetch failed, trying proxies...');
+  }
+
+  // 2. Essai avec le Proxy Netlify (pour le Web en production)
   try {
     const response = await fetch(NETLIFY_PROXY(url));
     if (response.ok) {
@@ -132,7 +148,7 @@ export const fetchCalendarData = async (url) => {
     console.warn('Netlify Proxy failed, trying fallbacks...');
   }
 
-  // 2. Fallbacks si le serveur Netlify est indisponible
+  // 3. Fallbacks publics de secours
   for (const proxyFn of PROXIES) {
     try {
       const proxyUrl = proxyFn(url);
@@ -146,17 +162,34 @@ export const fetchCalendarData = async (url) => {
     }
   }
 
-  throw new Error('Echec Sync : Aucun proxy n’a fonctionné');
+  throw new Error('Echec Sync : Aucun accès n’a fonctionné (Direct + Proxies)');
 };
 
 export const refreshAll = async (establishments) => {
   const promises = establishments.map(async (est) => {
     const updatedApts = await Promise.all(
       est.apartments.map(async (apt) => {
+        const urlsToFetch = apt.icalUrls || (apt.icalUrl ? [apt.icalUrl] : []);
+        const validUrls = urlsToFetch
+          .flatMap(url => url ? url.split(',').map(u => u.trim()) : [])
+          .filter(url => url !== '');
+        
+        if (validUrls.length === 0) return apt;
+        
         try {
-          if (!apt.icalUrl) return apt;
-          const events = await fetchCalendarData(apt.icalUrl);
-          return { ...apt, events, lastSync: new Date().toISOString(), error: null };
+          const allEventsArrays = [];
+          for (const url of validUrls) {
+            try {
+              const events = await fetchCalendarData(url);
+              allEventsArrays.push(events || []);
+            } catch (err) {
+              allEventsArrays.push([]);
+            }
+          }
+          
+          const mergedEvents = allEventsArrays.reduce((acc, val) => acc.concat(val), []);
+          
+          return { ...apt, events: mergedEvents, lastSync: new Date().toISOString(), error: null };
         } catch (e) {
           return { ...apt, error: e.message };
         }

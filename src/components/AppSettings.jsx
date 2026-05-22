@@ -63,7 +63,7 @@ const AppSettings = ({ establishments, onUpdate, language, onLangChange, dashboa
       if (est.id !== estId) return est;
       return {
         ...est,
-        apartments: [...(est.apartments || []), { id: newId, name: t('aptNamePH'), icalUrl: '', events: [] }]
+        apartments: [...(est.apartments || []), { id: newId, name: t('aptNamePH'), icalUrls: [''], events: [] }]
       };
     }));
   };
@@ -83,6 +83,55 @@ const AppSettings = ({ establishments, onUpdate, language, onLangChange, dashboa
         { text: t('yesDel'), style: "destructive", onPress: proceed }
       ]);
     }
+  };
+
+  const handleIcalChange = (estId, aptId, index, value) => {
+    setLocalEstablishments(prev => prev.map(est => {
+      if (est.id !== estId) return est;
+      return {
+        ...est,
+        apartments: est.apartments.map(apt => {
+          if (apt.id !== aptId) return apt;
+          const urls = apt.icalUrls ? [...apt.icalUrls] : [apt.icalUrl || ''];
+          urls[index] = value;
+          return { ...apt, icalUrls: urls };
+        })
+      };
+    }));
+  };
+
+  const handleAddIcal = (estId, aptId) => {
+    setLocalEstablishments(prev => prev.map(est => {
+      if (est.id !== estId) return est;
+      return {
+        ...est,
+        apartments: est.apartments.map(apt => {
+          if (apt.id !== aptId) return apt;
+          const urls = apt.icalUrls ? [...apt.icalUrls] : [apt.icalUrl || ''];
+          if (urls.length < 5) urls.push('');
+          return { ...apt, icalUrls: urls };
+        })
+      };
+    }));
+  };
+
+  const handleRemoveIcal = (estId, aptId, index) => {
+    setLocalEstablishments(prev => prev.map(est => {
+      if (est.id !== estId) return est;
+      return {
+        ...est,
+        apartments: est.apartments.map(apt => {
+          if (apt.id !== aptId) return apt;
+          const urls = apt.icalUrls ? [...apt.icalUrls] : [apt.icalUrl || ''];
+          if (urls.length > 1) {
+            urls.splice(index, 1);
+          } else {
+            urls[0] = '';
+          }
+          return { ...apt, icalUrls: urls };
+        })
+      };
+    }));
   };
 
   const handleSave = async () => {
@@ -123,7 +172,7 @@ const AppSettings = ({ establishments, onUpdate, language, onLangChange, dashboa
           <View style={styles.controlSection}>
             <View style={styles.versionSelector}>
               <Text style={styles.styleLabel}>{t('styleTitle')} :</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.versionScroll}>
+              <View style={styles.versionScroll}>
                 {[
                   { id: 'dark', label: t('vDark') },
                   { id: 'classic', label: t('vClassic') },
@@ -144,7 +193,7 @@ const AppSettings = ({ establishments, onUpdate, language, onLangChange, dashboa
                     </TouchableOpacity>
                   );
                 })}
-            </ScrollView>
+              </View>
             </View>
           </View>
         </View>
@@ -193,18 +242,31 @@ const AppSettings = ({ establishments, onUpdate, language, onLangChange, dashboa
                   </View>
                   <View style={styles.fieldSection}>
                     <Text style={styles.inputLabel}>{t('icalLabel')}</Text>
-                    <View style={styles.urlContainer}>
-                      <LinkIcon size={14} color="#3b82f6" style={styles.urlIcon} />
-                      <TextInput
-                        style={styles.urlInput}
-                        placeholder={t('urlPH')}
-                        placeholderTextColor="#475569"
-                        value={apt.icalUrl}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        onChangeText={(text) => handleAptChange(est.id, apt.id, 'icalUrl', text)}
-                      />
-                    </View>
+                    {(apt.icalUrls || (apt.icalUrl !== undefined ? [apt.icalUrl] : [''])).map((url, iIndex) => (
+                      <View key={iIndex} style={[styles.urlContainer, { marginBottom: 6 }]}>
+                        <LinkIcon size={14} color="#3b82f6" style={styles.urlIcon} />
+                        <TextInput
+                          style={styles.urlInput}
+                          placeholder={t('urlPH')}
+                          placeholderTextColor="#475569"
+                          value={url}
+                          autoCapitalize="none"
+                          autoCorrect={false}
+                          onChangeText={(text) => handleIcalChange(est.id, apt.id, iIndex, text)}
+                        />
+                        {((apt.icalUrls?.length > 1) || (!apt.icalUrls && apt.icalUrl !== undefined)) && (
+                          <TouchableOpacity onPress={() => handleRemoveIcal(est.id, apt.id, iIndex)} style={{ padding: 4 }}>
+                            <Trash2 size={14} color="#f87171" />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    ))}
+                    {((apt.icalUrls?.length || 1) < 5) && (
+                      <TouchableOpacity onPress={() => handleAddIcal(est.id, apt.id)} style={styles.addIcalBtn}>
+                        <Plus size={12} color="#3b82f6" />
+                        <Text style={styles.addIcalText}>{t('addIcal')}</Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
                 </View>
               ))}
@@ -309,19 +371,18 @@ const styles = StyleSheet.create({
   
   // Header & Controls
   topControlsRow: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
+    flexDirection: 'column', 
+    gap: 15, 
     backgroundColor: '#1e293b', 
-    paddingVertical: 12,
+    paddingVertical: 15,
     paddingHorizontal: 15,
     borderRadius: 20, 
     marginBottom: 20,
     borderWidth: 1,
     borderColor: '#334155'
   },
-  controlSection: { flexShrink: 0 },
-  languageSelector: { flexDirection: 'row', gap: 8 },
+  controlSection: { flexShrink: 0, width: '100%', alignItems: 'center' },
+  languageSelector: { flexDirection: 'row', gap: 8, justifyContent: 'center' },
   langBtn: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 12, backgroundColor: '#0f172a', borderWidth: 1, borderColor: '#334155' },
   langBtnActive: { backgroundColor: '#3b82f6', borderColor: '#3b82f6' },
   flagIcon: { width: 22, height: 16, borderRadius: 2 },
@@ -329,8 +390,8 @@ const styles = StyleSheet.create({
   langBtnLocked: { opacity: 0.5 },
   langBtnTextActive: { }, 
 
-  versionSelector: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, marginLeft: 15 },
-  versionScroll: { gap: 6, paddingRight: 10 },
+  versionSelector: { flexDirection: 'column', alignItems: 'center', gap: 10, width: '100%' },
+  versionScroll: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center' },
   styleLabel: { color: '#64748b', fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' },
   versionBtn: { paddingVertical: 6, paddingHorizontal: 10, borderRadius: 10, backgroundColor: '#0f172a', borderWidth: 1, borderColor: '#334155' },
   versionBtnLocked: { opacity: 0.5 },
@@ -429,6 +490,9 @@ const styles = StyleSheet.create({
   },
 
   // Boutons
+  addIcalBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2, marginLeft: 2 },
+  addIcalText: { color: '#3b82f6', fontSize: 11, fontWeight: 'bold' },
+
   addAptButton: {
     flexDirection: 'row',
     alignItems: 'center',
