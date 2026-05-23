@@ -277,9 +277,15 @@ const AppSettings = ({ establishments, onUpdate, language, onLangChange, dashboa
                   <Text style={styles.addAptButtonText}>{t('addApt')}</Text>
                 </TouchableOpacity>
               ) : (
-                <TouchableOpacity style={styles.limitReachedBox} onPress={() => onUpgradeRequest(currentTier.id === 'LIGHT' ? 'ADVANCED' : 'PREMIUM')}>
-                   <Text style={styles.limitReachedText}>{t('maxAptReached').replace('{max}', currentTier.maxApt).replace('{tier}', currentTier.id === 'LIGHT' ? 'ADVANCED' : 'PREMIUM')}</Text>
-                </TouchableOpacity>
+                currentTier.id !== 'PREMIUM' ? (
+                  <TouchableOpacity style={styles.limitReachedBox} onPress={() => onUpgradeRequest(currentTier.id === 'LIGHT' ? 'ADVANCED' : 'PREMIUM')}>
+                     <Text style={styles.limitReachedText}>{t('maxAptReached').replace('{max}', currentTier.maxApt).replace('{tier}', currentTier.id === 'LIGHT' ? 'ADVANCED' : 'PREMIUM')}</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <View style={styles.limitReachedBox}>
+                     <Text style={styles.limitReachedText}>{t('maxAptReachedPremium').replace('{max}', currentTier.maxApt)}</Text>
+                  </View>
+                )
               )}
             </View>
           </View>
@@ -291,10 +297,17 @@ const AppSettings = ({ establishments, onUpdate, language, onLangChange, dashboa
             <Text style={styles.addEstButtonText}>{t('createEst')}</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={[styles.addEstButton, styles.disabledButton]} onPress={() => onUpgradeRequest('PREMIUM')}>
-             <Building size={20} color="#64748b" />
-             <Text style={[styles.addEstButtonText, { color: '#64748b' }]}>{t('maxEstReached').replace('{max}', currentTier.maxEst)}</Text>
-          </TouchableOpacity>
+          currentTier.id !== 'PREMIUM' ? (
+            <TouchableOpacity style={[styles.addEstButton, styles.disabledButton]} onPress={() => onUpgradeRequest('PREMIUM')}>
+               <Building size={20} color="#64748b" />
+               <Text style={[styles.addEstButtonText, { color: '#64748b' }]}>{t('maxEstReached').replace('{max}', currentTier.maxEst)}</Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={[styles.addEstButton, styles.disabledButton, { borderColor: '#334155' }]}>
+               <Building size={20} color="#64748b" />
+               <Text style={[styles.addEstButtonText, { color: '#64748b' }]}>{t('maxEstReachedPremium').replace('{max}', currentTier.maxEst)}</Text>
+            </View>
+          )
         )}
 
         <View style={styles.footerActions}>
