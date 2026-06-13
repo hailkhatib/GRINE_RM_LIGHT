@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { fr, enUS, es } from 'date-fns/locale';
 import Dashboard from './components/Dashboard';
 import AppSettings from './components/AppSettings';
-import { getEstablishments, saveEstablishments, fetchCalendarData, getLanguage, saveLanguage, getDashboardVersion, saveDashboardVersion } from './services/api';
+import { getEstablishments, saveEstablishments, fetchCalendarData, getLanguage, saveLanguage, getDashboardVersion, saveDashboardVersion, getBlockedUids, saveBlockedUids } from './services/api';
 import { getTranslation } from './translations';
 import { TIERS, CURRENT_TIER_KEY } from './constants/tiers';
 import UpgradeModal from './components/UpgradeModal';
@@ -22,6 +22,7 @@ export default function App() {
   const [language, setLanguage] = useState('fr');
   const [dashboardVersion, setDashboardVersion] = useState('dark');
   const [upgradeTarget, setUpgradeTarget] = useState(null);
+  const [blockedUids, setBlockedUids] = useState([]);
 
   useEffect(() => {
     loadData();
@@ -42,6 +43,9 @@ export default function App() {
 
       const data = await getEstablishments();
       setEstablishments(Array.isArray(data) ? data : []);
+
+      const uids = await getBlockedUids();
+      setBlockedUids(Array.isArray(uids) ? uids : []);
     } catch (error) {
       console.error("LoadData error:", error);
       setEstablishments([]);
@@ -100,6 +104,14 @@ export default function App() {
   const handleVersionChange = async (newVersion) => {
     setDashboardVersion(newVersion);
     await saveDashboardVersion(newVersion);
+  };
+
+  const handleToggleBlock = async (uid) => {
+    const updated = blockedUids.includes(uid)
+      ? blockedUids.filter(id => id !== uid)
+      : [...blockedUids, uid];
+    setBlockedUids(updated);
+    await saveBlockedUids(updated);
   };
 
   const handleRequestUpgrade = (tierKey) => {
@@ -173,6 +185,8 @@ export default function App() {
             establishments={establishments}
             viewDays={viewDays}
             onViewChange={setViewDays}
+            blockedUids={blockedUids}
+            onToggleBlock={handleToggleBlock}
             language={language}
             dashboardVersion={dashboardVersion}
             t={t}

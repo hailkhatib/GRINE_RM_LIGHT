@@ -16,7 +16,7 @@ call npm install
 :: 3. Lancement d'Expo en mode Web
 echo [3/3] Ouverture de l'application dans le navigateur...
 echo.
-set NODE_OPTIONS=--no-warnings --no-experimental-fetch
+set NODE_OPTIONS=--no-warnings
 
 :: On force le lancement sur le navigateur du PC
 call npx expo start --web --clear

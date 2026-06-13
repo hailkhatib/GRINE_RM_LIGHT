@@ -5,6 +5,15 @@ import { fr } from 'date-fns/locale';
 import { X, Info, ShieldAlert, UserCheck } from 'lucide-react-native';
 import { getStatusForDate } from '../utils/calendarUtils';
 
+const formatDateStr = (dateStr) => {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+  return dateStr;
+};
+
 const TimelineGrid = ({ establishments = [], days = 7, blockedUids = [], onToggleBlock, t, localeObj, theme = 'dark' }) => {
   const [selectedInfo, setSelectedInfo] = useState(null);
   const startDate = new Date();
@@ -16,7 +25,7 @@ const TimelineGrid = ({ establishments = [], days = 7, blockedUids = [], onToggl
       case 'arrivee': return { color: theme === 'coastal' ? '#176963' : '#3b82f6', label: t ? t('tagArrivee') : 'E' };
       case 'depart': return { color: theme === 'coastal' ? '#7e5700' : '#f59e0b', label: t ? t('tagDepart') : 'S' };
       case 'depart-arrivee': return { color: theme === 'coastal' ? '#5fa8a0' : '#8b5cf6', label: t ? t('tagInOut') : 'ES' };
-      case 'ferme': return { color: '#475569', label: '' };
+      case 'ferme': return { color: '#475569', label: 'B' };
       default: return { color: 'transparent', label: '-' };
     }
   };
@@ -163,7 +172,10 @@ const TimelineGrid = ({ establishments = [], days = 7, blockedUids = [], onToggl
 
             {selectedInfo && (
               <ScrollView style={styles.modalBody}>
-                <Text style={[styles.modalInfoDate, { color: tStyles.estHeaderBg }]}>
+                <Text style={{ fontSize: 11, color: tStyles.textMuted, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: 2 }}>
+                  {t ? t('dateDuJour') : 'Date du jour'}
+                </Text>
+                <Text style={[styles.modalInfoDate, { color: tStyles.estHeaderBg, marginBottom: 12 }]}>
                     {format(selectedInfo.date, 'EEEE d MMMM yyyy', { locale: localeObj })}
                 </Text>
                 <Text style={[styles.modalInfoApt, { color: tStyles.textMain }]}>{selectedInfo.aptName}</Text>
@@ -181,7 +193,10 @@ const TimelineGrid = ({ establishments = [], days = 7, blockedUids = [], onToggl
                                 <Text style={styles.typeBadgeText}>{isManualBlocked ? (t ? t('blocked') || 'BLOQUÉ' : 'BLOQUÉ') : (t ? t('reservation') : 'RÉSERVATION')}</Text>
                             </View>
                         </View>
-                        <Text style={styles.timeText}>{t ? t('from') : 'Du'} {e.startDate} {t ? t('to') : 'au'} {e.endDate}</Text>
+                        <Text style={{ fontSize: 11, color: tStyles.textMuted, fontWeight: 'bold', marginBottom: 2 }}>
+                          {t ? t('periodeSejour') : 'Période du séjour'} :
+                        </Text>
+                        <Text style={styles.timeText}>{t ? t('from') : 'Du'} {formatDateStr(e.startDate)} {t ? t('to') : 'au'} {formatDateStr(e.endDate)}</Text>
                         
                         <View style={styles.buttonGroup}>
                             {!isManualBlocked ? (

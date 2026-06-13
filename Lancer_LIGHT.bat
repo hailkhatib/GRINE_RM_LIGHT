@@ -6,7 +6,7 @@ echo ==================================================
 echo.
 
 set APP_VARIANT=light
-set NODE_OPTIONS=--no-warnings --no-experimental-fetch
+set NODE_OPTIONS=--no-warnings
 
 echo [1/2] Demarrage du Proxy...
 start "PROXY" cmd /c "npx netlify dev"
